@@ -7,4 +7,5 @@
     <string name="deaths">Deaths</string>
     <string name="today_cases">Today cases</string>
     <string name="today_deaths">Today deaths</string>
+    <string name="search">Search</string>
 </resources>

@@ -24,8 +24,8 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="2dp"
                 android:baselineAligned="false"
-                android:gravity="center"
-                tools:text="1" />
+                android:gravity="start"
+                tools:text="#1" />
 
             <TextView
                 android:id="@+id/tv_cases"
@@ -52,6 +52,8 @@
                 android:layout_margin="2dp"
                 android:baselineAligned="false"
                 android:gravity="center"
+                android:inputType="textMultiLine"
+                android:singleLine="false"
                 android:text="@string/today_cases" />
 
             <TextView
@@ -61,6 +63,8 @@
                 android:layout_margin="2dp"
                 android:baselineAligned="false"
                 android:gravity="center"
+                android:inputType="textMultiLine"
+                android:singleLine="false"
                 android:text="@string/today_deaths" />
         </TableRow>
 
@@ -73,8 +77,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="2dp"
-                android:gravity="center"
-                android:textAlignment="center"
+                android:gravity="start"
+                android:inputType="textMultiLine"
+                android:singleLine="false"
                 tools:text="Ukraine" />
 
             <TextView

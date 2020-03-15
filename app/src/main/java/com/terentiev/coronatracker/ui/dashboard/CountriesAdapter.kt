@@ -3,15 +3,19 @@ package com.terentiev.coronatracker.ui.dashboard
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Filter
+import android.widget.Filterable
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.terentiev.coronatracker.R
 import com.terentiev.coronatracker.data.Country
 import kotlinx.android.synthetic.main.country_cardview.view.*
-import org.w3c.dom.Text
 
 class CountriesAdapter(private val countries: List<Country>) :
-    RecyclerView.Adapter<CountriesAdapter.ViewHolder>() {
+    RecyclerView.Adapter<CountriesAdapter.ViewHolder>(), Filterable {
+
+    private var filteredCountries = countries
+
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val place: TextView = itemView.tv_place
         val country: TextView = itemView.tv_country
@@ -26,15 +30,45 @@ class CountriesAdapter(private val countries: List<Country>) :
         return ViewHolder(view)
     }
 
-    override fun getItemCount() = countries.size
+    override fun getItemCount() = filteredCountries.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.place.text = (position + 1).toString()
-        holder.country.text = countries[position].country
-        holder.cases.text = countries[position].cases.toString()
-        holder.deaths.text = countries[position].deaths.toString()
-        holder.todayCases.text = countries[position].todayCases.toString()
-        holder.todayDeaths.text = countries[position].todayDeaths.toString()
+        holder.place.text = "#" + (position + 1).toString()
+        holder.country.text = filteredCountries[position].country
+        holder.cases.text = filteredCountries[position].cases.toString()
+        holder.deaths.text = filteredCountries[position].deaths.toString()
+        holder.todayCases.text = filteredCountries[position].todayCases.toString()
+        holder.todayDeaths.text = filteredCountries[position].todayDeaths.toString()
+    }
+
+    override fun getFilter(): Filter {
+        return object : Filter() {
+            override fun performFiltering(p0: CharSequence?): FilterResults {
+                val charString = p0.toString()
+                filteredCountries = if (charString.isEmpty()) {
+                    countries
+                } else {
+                    val filteredList = arrayListOf<Country>()
+                    for (row in countries) {
+                        if (row.country!!.toLowerCase().contains(charString.toLowerCase())
+                        ) {
+                            filteredList.add(row)
+                        }
+                    }
+                    filteredList
+                }
+
+                val filterResults = FilterResults()
+                filterResults.values = filteredCountries
+                return filterResults
+            }
+
+            override fun publishResults(p0: CharSequence?, p1: FilterResults?) {
+                filteredCountries = p1?.values as List<Country>
+                notifyDataSetChanged()
+            }
+
+        }
     }
 
 }
