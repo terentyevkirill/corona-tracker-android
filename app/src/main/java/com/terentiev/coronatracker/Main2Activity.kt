@@ -1,11 +1,13 @@
 package com.terentiev.coronatracker
 
+import android.app.ProgressDialog
 import android.app.SearchManager
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.ProgressBar
 import android.widget.SearchView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -27,19 +29,33 @@ class Main2Activity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main2)
 
+        loadJSON()
+
+    }
+
+    private fun loadJSON() {
         val retrofit = Retrofit.Builder()
             .baseUrl("https://corona.lmao.ninja")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
         val api = retrofit.create(ApiService::class.java)
+        val progressDialog = ProgressDialog(this)
+        progressDialog.setCancelable(false)
+        progressDialog.setMessage("Loading...");
+        progressDialog.setTitle("Fetching data");
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.show()
+
         api.fetchAllCountries().enqueue(object : Callback<List<Country>> {
             override fun onResponse(call: Call<List<Country>>, response: Response<List<Country>>) {
                 Log.d("DashboardFragment", "onResponse()")
+                progressDialog.dismiss()
                 showData(response.body()!!)
             }
 
             override fun onFailure(call: Call<List<Country>>, t: Throwable) {
+                progressDialog.dismiss()
                 Log.d("DashboardFragment", "onFailure()")
             }
 
