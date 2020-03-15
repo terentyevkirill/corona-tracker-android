@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">CoronaTracker</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="cases">Cases</string>
+    <string name="deaths">Deaths</string>
+    <string name="today_cases">Today cases</string>
+    <string name="today_deaths">Today deaths</string>
+</resources>

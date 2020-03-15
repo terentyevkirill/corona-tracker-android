@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardPreventCornerOverlap="true"
+    app:cardUseCompatPadding="true">
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="4dp"
+        android:stretchColumns="*">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/tv_place"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="2dp"
+                android:baselineAligned="false"
+                android:gravity="center"
+                tools:text="1" />
+
+            <TextView
+                android:id="@+id/tv_cases"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="2dp"
+                android:baselineAligned="false"
+                android:gravity="center"
+                android:text="@string/cases" />
+
+            <TextView
+                android:id="@+id/tv_deaths"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="2dp"
+                android:baselineAligned="false"
+                android:gravity="center"
+                android:text="@string/deaths" />
+
+            <TextView
+                android:id="@+id/tv_today_cases"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="2dp"
+                android:baselineAligned="false"
+                android:gravity="center"
+                android:text="@string/today_cases" />
+
+            <TextView
+                android:id="@+id/tv_today_deaths"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="2dp"
+                android:baselineAligned="false"
+                android:gravity="center"
+                android:text="@string/today_deaths" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/tv_country"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="2dp"
+                android:gravity="center"
+                android:textAlignment="center"
+                tools:text="Ukraine" />
+
+            <TextView
+                android:id="@+id/tv_cases_num"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="2dp"
+                android:gravity="center"
+                tools:text="3000" />
+
+            <TextView
+                android:id="@+id/tv_deaths_num"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="2dp"
+                android:gravity="center"
+                tools:text="50" />
+
+            <TextView
+                android:id="@+id/tv_today_cases_num"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="2dp"
+                android:gravity="center"
+                tools:text="3" />
+
+            <TextView
+                android:id="@+id/tv_today_deaths_num"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="2dp"
+                android:gravity="center"
+                tools:text="1" />
+        </TableRow>
+
+    </TableLayout>
+
+</androidx.cardview.widget.CardView>
