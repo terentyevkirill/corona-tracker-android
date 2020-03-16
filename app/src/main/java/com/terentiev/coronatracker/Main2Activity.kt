@@ -40,9 +40,17 @@ class Main2Activity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener 
         adapter = CountriesAdapter()
         recyclerView.adapter = adapter
         networkUnavailableSnackbar =
-            Snackbar.make(container_mainactivity2, getString(R.string.no_conn), Snackbar.LENGTH_LONG)
+            Snackbar.make(
+                container_mainactivity2,
+                getString(R.string.no_conn),
+                Snackbar.LENGTH_LONG
+            )
         recyclerView.layoutManager = LinearLayoutManager(this)
+        swipeRefreshLayout.setColorSchemeResources(
+            R.color.colorPrimary
+        )
         swipeRefreshLayout.setOnRefreshListener(this)
+        loadDataFromSharedPrefs()
         onRefresh()
     }
 
@@ -60,11 +68,8 @@ class Main2Activity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener 
             override fun onResponse(call: Call<List<Country>>, response: Response<List<Country>>) {
                 Log.d("DashboardFragment", "onResponse()")
                 adapter.setCountries(response.body()!!)
+                saveDataToSharedPrefs(response.body()!!)
                 swipeRefreshLayout.isRefreshing = false
-                val editor = pref.edit()
-                val gson = Gson()
-                editor.putString("data", gson.toJson(response.body()))
-                editor.apply()
             }
 
             override fun onFailure(call: Call<List<Country>>, t: Throwable) {
@@ -99,10 +104,7 @@ class Main2Activity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener 
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         return when (item?.itemId) {
-            R.id.search_item -> {
-//                swipeRefreshLayout.isRefreshing = false
-                true
-            }
+            R.id.search_item -> true
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -120,16 +122,11 @@ class Main2Activity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener 
             networkUnavailableSnackbar.dismiss()
             loadJSON()
         } else {
+            swipeRefreshLayout.postDelayed({
+                swipeRefreshLayout.isRefreshing = false
+            }, 500)
             networkUnavailableSnackbar.show()
-            swipeRefreshLayout.isRefreshing = false
-            pref = applicationContext.getSharedPreferences("MyPrefs", 0)
-            if (!pref.getString("data", "").equals("")) {
-                val gson = Gson()
-                val type: Type =
-                    object : TypeToken<List<Country?>?>() {}.type
-                val data = gson.fromJson(pref.getString("data", ""), type) as List<Country>
-                adapter.setCountries(data)
-            }
+
         }
     }
 
@@ -140,4 +137,21 @@ class Main2Activity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener 
         return activeNetworkInfo != null && activeNetworkInfo.isConnected
     }
 
+    private fun loadDataFromSharedPrefs() {
+        pref = applicationContext.getSharedPreferences("MyPrefs", 0)
+        if (!pref.getString("data", "").equals("")) {
+            val gson = Gson()
+            val type: Type =
+                object : TypeToken<List<Country?>?>() {}.type
+            val data = gson.fromJson(pref.getString("data", ""), type) as List<Country>
+            adapter.setCountries(data)
+        }
+    }
+
+    private fun saveDataToSharedPrefs(data: List<Country>) {
+        val editor = pref.edit()
+        val gson = Gson()
+        editor.putString("data", gson.toJson(data))
+        editor.apply()
+    }
 }
