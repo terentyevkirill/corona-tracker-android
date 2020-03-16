@@ -43,7 +43,7 @@ class CountriesAdapter :
     override fun getItemCount() = filteredCountries.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.place.text = "#" + (position + 1).toString()
+        holder.place.text = "#" + (countries.indexOf(filteredCountries[position]) + 1).toString()
         holder.country.text = filteredCountries[position].country
         holder.cases.text = filteredCountries[position].cases.toString()
         holder.deaths.text = filteredCountries[position].deaths.toString()
