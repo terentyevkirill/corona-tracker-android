@@ -11,10 +11,10 @@ import com.terentiev.coronatracker.R
 import com.terentiev.coronatracker.data.Country
 import kotlinx.android.synthetic.main.country_cardview.view.*
 
-class CountriesAdapter(private val countries: List<Country>) :
+class CountriesAdapter :
     RecyclerView.Adapter<CountriesAdapter.ViewHolder>(), Filterable {
-
-    private var filteredCountries = countries
+    private lateinit var countries: List<Country>
+    private var filteredCountries = listOf<Country>()
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val place: TextView = itemView.tv_place
@@ -28,6 +28,16 @@ class CountriesAdapter(private val countries: List<Country>) :
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.country_cardview, parent, false)
         return ViewHolder(view)
+    }
+
+    fun setCountries(countries: List<Country>) {
+        this.countries = countries
+        if (filteredCountries.isEmpty()) {
+            this.filteredCountries = countries
+        } else {
+        }
+
+        notifyDataSetChanged()
     }
 
     override fun getItemCount() = filteredCountries.size

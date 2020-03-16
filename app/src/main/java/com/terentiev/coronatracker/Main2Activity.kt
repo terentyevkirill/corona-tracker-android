@@ -1,16 +1,17 @@
 package com.terentiev.coronatracker
 
-import android.app.ProgressDialog
 import android.app.SearchManager
 import android.content.Context
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.ProgressBar
 import android.widget.SearchView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.google.android.material.snackbar.Snackbar
 import com.terentiev.coronatracker.api.ApiService
 import com.terentiev.coronatracker.data.Country
 import com.terentiev.coronatracker.ui.dashboard.CountriesAdapter
@@ -21,51 +22,46 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class Main2Activity : AppCompatActivity() {
+class Main2Activity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
     private lateinit var searchView: SearchView
     private lateinit var adapter: CountriesAdapter
+    private lateinit var networkUnavailableSnackbar: Snackbar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main2)
-
-        loadJSON()
-
+        networkUnavailableSnackbar =
+            Snackbar.make(container_mainactivity2, getString(R.string.no_conn), Snackbar.LENGTH_LONG)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        adapter = CountriesAdapter()
+        recyclerView.adapter = adapter
+        swipeRefreshLayout.setOnRefreshListener(this)
+        onRefresh()
     }
 
     private fun loadJSON() {
+        swipeRefreshLayout.isRefreshing = true
+
         val retrofit = Retrofit.Builder()
             .baseUrl("https://corona.lmao.ninja")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
         val api = retrofit.create(ApiService::class.java)
-        val progressDialog = ProgressDialog(this)
-        progressDialog.setCancelable(false)
-        progressDialog.setMessage("Loading...");
-        progressDialog.setTitle("Fetching data");
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDialog.show()
 
         api.fetchAllCountries().enqueue(object : Callback<List<Country>> {
             override fun onResponse(call: Call<List<Country>>, response: Response<List<Country>>) {
                 Log.d("DashboardFragment", "onResponse()")
-                progressDialog.dismiss()
-                showData(response.body()!!)
+                adapter.setCountries(response.body()!!)
+                swipeRefreshLayout.isRefreshing = false
             }
 
             override fun onFailure(call: Call<List<Country>>, t: Throwable) {
-                progressDialog.dismiss()
                 Log.d("DashboardFragment", "onFailure()")
+                swipeRefreshLayout.isRefreshing = false
             }
 
         })
-    }
-
-    private fun showData(countries: List<Country>) {
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = CountriesAdapter(countries)
-        recyclerView.adapter = adapter
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -92,7 +88,10 @@ class Main2Activity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         return when (item?.itemId) {
-            R.id.search_item -> true
+            R.id.search_item -> {
+//                swipeRefreshLayout.isRefreshing = false
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -104,4 +103,22 @@ class Main2Activity : AppCompatActivity() {
             super.onBackPressed()
         }
     }
+
+    override fun onRefresh() {
+        if (isNetworkAvailable()) {
+            networkUnavailableSnackbar.dismiss()
+            loadJSON()
+        } else {
+            networkUnavailableSnackbar.show()
+            swipeRefreshLayout.isRefreshing = false
+        }
+    }
+
+    private fun isNetworkAvailable(): Boolean {
+        val connectivityManager =
+            getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val activeNetworkInfo = connectivityManager.activeNetworkInfo
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected
+    }
+
 }
