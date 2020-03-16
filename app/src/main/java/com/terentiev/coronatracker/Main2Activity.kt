@@ -2,6 +2,7 @@ package com.terentiev.coronatracker
 
 import android.app.SearchManager
 import android.content.Context
+import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.os.Bundle
 import android.util.Log
@@ -12,6 +13,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.snackbar.Snackbar
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.terentiev.coronatracker.api.ApiService
 import com.terentiev.coronatracker.data.Country
 import com.terentiev.coronatracker.ui.dashboard.CountriesAdapter
@@ -21,20 +24,24 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.lang.reflect.Type
+
 
 class Main2Activity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
     private lateinit var searchView: SearchView
     private lateinit var adapter: CountriesAdapter
     private lateinit var networkUnavailableSnackbar: Snackbar
+    private lateinit var pref: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main2)
+        pref = applicationContext.getSharedPreferences("MyPrefs", 0)
+        adapter = CountriesAdapter()
+        recyclerView.adapter = adapter
         networkUnavailableSnackbar =
             Snackbar.make(container_mainactivity2, getString(R.string.no_conn), Snackbar.LENGTH_LONG)
         recyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = CountriesAdapter()
-        recyclerView.adapter = adapter
         swipeRefreshLayout.setOnRefreshListener(this)
         onRefresh()
     }
@@ -54,6 +61,10 @@ class Main2Activity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener 
                 Log.d("DashboardFragment", "onResponse()")
                 adapter.setCountries(response.body()!!)
                 swipeRefreshLayout.isRefreshing = false
+                val editor = pref.edit()
+                val gson = Gson()
+                editor.putString("data", gson.toJson(response.body()))
+                editor.apply()
             }
 
             override fun onFailure(call: Call<List<Country>>, t: Throwable) {
@@ -111,6 +122,14 @@ class Main2Activity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener 
         } else {
             networkUnavailableSnackbar.show()
             swipeRefreshLayout.isRefreshing = false
+            pref = applicationContext.getSharedPreferences("MyPrefs", 0)
+            if (!pref.getString("data", "").equals("")) {
+                val gson = Gson()
+                val type: Type =
+                    object : TypeToken<List<Country?>?>() {}.type
+                val data = gson.fromJson(pref.getString("data", ""), type) as List<Country>
+                adapter.setCountries(data)
+            }
         }
     }
 
