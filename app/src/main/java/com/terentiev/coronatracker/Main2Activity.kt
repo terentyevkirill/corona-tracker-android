@@ -11,7 +11,9 @@ import android.util.Log
 import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.LinearLayout
 import android.widget.SearchView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -90,11 +92,12 @@ class Main2Activity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener 
 
     private fun showUpdateToast() {
         val date = Date(averageData!!.updated)
-        val sdf = SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.getDefault())
+        val sdf = SimpleDateFormat("dd MMM yyyy HH:mm", Locale.getDefault())
         val toast = Toast.makeText(
-            applicationContext, sdf.format(date).toString(),
+            applicationContext, "${getString(R.string.updated)}\n${sdf.format(date)}",
             Toast.LENGTH_LONG
         )
+        ((toast.view as LinearLayout).getChildAt(0) as TextView).gravity = Gravity.CENTER_HORIZONTAL
         toast.setGravity(Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL, 0, 200)
         toast.show()
     }
