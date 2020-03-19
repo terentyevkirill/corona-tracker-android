@@ -8,9 +8,11 @@ import android.net.ConnectivityManager
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
+import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.SearchView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -18,6 +20,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.terentiev.coronatracker.api.ApiService
+import com.terentiev.coronatracker.data.AverageInfo
 import com.terentiev.coronatracker.data.Country
 import com.terentiev.coronatracker.ui.dashboard.CountriesAdapter
 import kotlinx.android.synthetic.main.activity_main2.*
@@ -27,6 +30,8 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.lang.reflect.Type
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class Main2Activity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
@@ -36,6 +41,7 @@ class Main2Activity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener 
     private lateinit var pref: SharedPreferences
     private lateinit var retrofit: Retrofit
     private lateinit var api: ApiService
+    private var averageData: AverageInfo? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,6 +74,7 @@ class Main2Activity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener 
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(this)
     }
+
     private fun initSnackBar() {
         networkUnavailableSnackBar =
             Snackbar.make(
@@ -75,23 +82,48 @@ class Main2Activity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener 
                 getString(R.string.no_conn),
                 Snackbar.LENGTH_LONG
             )
+
         networkUnavailableSnackBar.setAction(R.string.settings) {
             startActivity(Intent(Settings.ACTION_SETTINGS))
         }
     }
+
+    private fun showUpdateToast() {
+        val date = Date(averageData!!.updated)
+        val sdf = SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.getDefault())
+        val toast = Toast.makeText(
+            applicationContext, sdf.format(date).toString(),
+            Toast.LENGTH_LONG
+        )
+        toast.setGravity(Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL, 0, 200)
+        toast.show()
+    }
+
     private fun loadJSON() {
         swipeRefreshLayout.isRefreshing = true
+        api.fetchAll().enqueue(object : Callback<AverageInfo> {
+            override fun onResponse(call: Call<AverageInfo>, response: Response<AverageInfo>) {
+                Log.d("MainActivity", "onResponse():${response.body()}")
+                averageData = response.body()!!
+                saveDataToSharedPrefs(averageData!!)
+                initSnackBar()
+                showUpdateToast()
+            }
 
+            override fun onFailure(call: Call<AverageInfo>, t: Throwable) {
+                Log.d("MainActivity", "onFailure()")
+            }
+        })
         api.fetchAllCountries().enqueue(object : Callback<List<Country>> {
             override fun onResponse(call: Call<List<Country>>, response: Response<List<Country>>) {
-                Log.d("DashboardFragment", "onResponse():${response.body()}")
+                Log.d("MainActivity", "onResponse():${response.body()}")
                 adapter.setCountries(response.body()!!)
                 saveDataToSharedPrefs(response.body()!!)
                 swipeRefreshLayout.isRefreshing = false
             }
 
             override fun onFailure(call: Call<List<Country>>, t: Throwable) {
-                Log.d("DashboardFragment", "onFailure()")
+                Log.d("MainActivity", "onFailure()")
                 swipeRefreshLayout.isRefreshing = false
             }
         })
@@ -142,7 +174,9 @@ class Main2Activity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener 
                 swipeRefreshLayout.isRefreshing = false
             }, 500)
             networkUnavailableSnackBar.show()
-
+            if (averageData != null) {
+                showUpdateToast()
+            }
         }
     }
 
@@ -155,19 +189,32 @@ class Main2Activity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener 
 
     private fun loadDataFromSharedPrefs() {
         pref = applicationContext.getSharedPreferences("MyPrefs", 0)
-        if (!pref.getString("data", "").equals("")) {
+        if (!pref.getString("countries", "").equals("")
+            && !pref.getString("all", "").equals("")
+        ) {
             val gson = Gson()
-            val type: Type =
+            val typeCountries: Type =
                 object : TypeToken<List<Country?>?>() {}.type
-            val data = gson.fromJson(pref.getString("data", ""), type) as List<Country>
-            adapter.setCountries(data)
+            val typeAll: Type =
+                object : TypeToken<AverageInfo?>() {}.type
+            val countries =
+                gson.fromJson(pref.getString("countries", ""), typeCountries) as List<Country>
+            averageData = gson.fromJson(pref.getString("all", ""), typeAll) as AverageInfo
+            adapter.setCountries(countries)
         }
     }
 
     private fun saveDataToSharedPrefs(data: List<Country>) {
         val editor = pref.edit()
         val gson = Gson()
-        editor.putString("data", gson.toJson(data))
+        editor.putString("countries", gson.toJson(data))
+        editor.apply()
+    }
+
+    private fun saveDataToSharedPrefs(data: AverageInfo) {
+        val editor = pref.edit()
+        val gson = Gson()
+        editor.putString("all", gson.toJson(data))
         editor.apply()
     }
 }

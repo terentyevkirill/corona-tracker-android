@@ -11,4 +11,5 @@
     <string name="recovered">Recovered</string>
     <string name="no_conn">No internet connection</string>
     <string name="settings">settings</string>
+    <string name="updated">"Updated: "</string>
 </resources>

@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.terentiev.coronatracker.R
 import com.terentiev.coronatracker.api.ApiService
+import com.terentiev.coronatracker.data.AverageInfo
 import com.terentiev.coronatracker.data.Country
 import kotlinx.android.synthetic.main.activity_main2.*
 import kotlinx.android.synthetic.main.fragment_dashboard.*
@@ -57,17 +58,16 @@ class DashboardFragment : Fragment() {
         progressDialog.setTitle("Fetching data");
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.show()
-
         api.fetchAllCountries().enqueue(object : Callback<List<Country>> {
             override fun onResponse(call: Call<List<Country>>, response: Response<List<Country>>) {
-                Log.d("DashboardFragment", "onResponse()")
+                d("DashboardFragment", "onResponse()")
                 progressDialog.dismiss()
                 adapter.setCountries(response.body()!!)
             }
 
             override fun onFailure(call: Call<List<Country>>, t: Throwable) {
                 progressDialog.dismiss()
-                Log.d("DashboardFragment", "onFailure()")
+                d("DashboardFragment", "onFailure()")
             }
 
         })
