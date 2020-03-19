@@ -23,12 +23,13 @@
             android:clipToPadding="false"
             android:padding="4dp"
             android:scrollbarAlwaysDrawVerticalTrack="false"
+            android:scrollbarStyle="outsideOverlay"
             android:scrollbars="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:listitem="@layout/country_cardview" />
+            tools:listitem="@layout/country_card" />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

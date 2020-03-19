@@ -2,9 +2,11 @@ package com.terentiev.coronatracker
 
 import android.app.SearchManager
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -30,39 +32,55 @@ import java.lang.reflect.Type
 class Main2Activity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
     private lateinit var searchView: SearchView
     private lateinit var adapter: CountriesAdapter
-    private lateinit var networkUnavailableSnackbar: Snackbar
+    private lateinit var networkUnavailableSnackBar: Snackbar
     private lateinit var pref: SharedPreferences
+    private lateinit var retrofit: Retrofit
+    private lateinit var api: ApiService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main2)
-        pref = applicationContext.getSharedPreferences("MyPrefs", 0)
+        initSnackBar()
+        initRecyclerView()
+        initApi()
+        initSwipeRefreshLayout()
+        loadDataFromSharedPrefs()
+        onRefresh()
+    }
+
+    private fun initApi() {
+        retrofit = Retrofit.Builder()
+            .baseUrl("https://corona.lmao.ninja")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        api = retrofit.create(ApiService::class.java)
+    }
+
+    private fun initSwipeRefreshLayout() {
+        swipeRefreshLayout.setColorSchemeResources(
+            R.color.colorPrimary
+        )
+        swipeRefreshLayout.setOnRefreshListener(this)
+    }
+
+    private fun initRecyclerView() {
         adapter = CountriesAdapter()
         recyclerView.adapter = adapter
-        networkUnavailableSnackbar =
+        recyclerView.layoutManager = LinearLayoutManager(this)
+    }
+    private fun initSnackBar() {
+        networkUnavailableSnackBar =
             Snackbar.make(
                 container_mainactivity2,
                 getString(R.string.no_conn),
                 Snackbar.LENGTH_LONG
             )
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        swipeRefreshLayout.setColorSchemeResources(
-            R.color.colorPrimary
-        )
-        swipeRefreshLayout.setOnRefreshListener(this)
-        loadDataFromSharedPrefs()
-        onRefresh()
+        networkUnavailableSnackBar.setAction(R.string.settings) {
+            startActivity(Intent(Settings.ACTION_SETTINGS))
+        }
     }
-
     private fun loadJSON() {
         swipeRefreshLayout.isRefreshing = true
-
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://corona.lmao.ninja")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
-        val api = retrofit.create(ApiService::class.java)
 
         api.fetchAllCountries().enqueue(object : Callback<List<Country>> {
             override fun onResponse(call: Call<List<Country>>, response: Response<List<Country>>) {
@@ -76,7 +94,6 @@ class Main2Activity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener 
                 Log.d("DashboardFragment", "onFailure()")
                 swipeRefreshLayout.isRefreshing = false
             }
-
         })
     }
 
@@ -119,13 +136,13 @@ class Main2Activity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener 
 
     override fun onRefresh() {
         if (isNetworkAvailable()) {
-            networkUnavailableSnackbar.dismiss()
+            networkUnavailableSnackBar.dismiss()
             loadJSON()
         } else {
             swipeRefreshLayout.postDelayed({
                 swipeRefreshLayout.isRefreshing = false
             }, 500)
-            networkUnavailableSnackbar.show()
+            networkUnavailableSnackBar.show()
 
         }
     }

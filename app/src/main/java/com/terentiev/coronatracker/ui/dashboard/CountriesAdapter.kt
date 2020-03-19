@@ -9,7 +9,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.terentiev.coronatracker.R
 import com.terentiev.coronatracker.data.Country
-import kotlinx.android.synthetic.main.country_cardview.view.*
+import kotlinx.android.synthetic.main.country_card.view.*
 
 class CountriesAdapter :
     RecyclerView.Adapter<CountriesAdapter.ViewHolder>(), Filterable {
@@ -23,10 +23,11 @@ class CountriesAdapter :
         val todayCases: TextView = itemView.tv_today_cases_num
         val deaths: TextView = itemView.tv_deaths_num
         val todayDeaths: TextView = itemView.tv_today_deaths_num
+        val recovered: TextView = itemView.tv_recovered_num
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.country_cardview, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.country_card, parent, false)
         return ViewHolder(view)
     }
 
@@ -34,9 +35,7 @@ class CountriesAdapter :
         this.countries = countries
         if (filteredCountries.isEmpty()) {
             this.filteredCountries = countries
-        } else {
         }
-
         notifyDataSetChanged()
     }
 
@@ -49,6 +48,7 @@ class CountriesAdapter :
         holder.deaths.text = filteredCountries[position].deaths.toString()
         holder.todayCases.text = filteredCountries[position].todayCases.toString()
         holder.todayDeaths.text = filteredCountries[position].todayDeaths.toString()
+        holder.recovered.text = filteredCountries[position].recovered.toString()
     }
 
     override fun getFilter(): Filter {
