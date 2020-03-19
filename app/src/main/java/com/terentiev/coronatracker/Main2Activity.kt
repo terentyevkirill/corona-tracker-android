@@ -84,7 +84,7 @@ class Main2Activity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener 
 
         api.fetchAllCountries().enqueue(object : Callback<List<Country>> {
             override fun onResponse(call: Call<List<Country>>, response: Response<List<Country>>) {
-                Log.d("DashboardFragment", "onResponse()")
+                Log.d("DashboardFragment", "onResponse():${response.body()}")
                 adapter.setCountries(response.body()!!)
                 saveDataToSharedPrefs(response.body()!!)
                 swipeRefreshLayout.isRefreshing = false
@@ -114,7 +114,6 @@ class Main2Activity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener 
                 adapter.filter.filter(newText)
                 return false
             }
-
         })
         return true
     }
