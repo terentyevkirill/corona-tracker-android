@@ -33,10 +33,10 @@ class DashboardFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        recyclerView.layoutManager = LinearLayoutManager(context)
-        adapter = CountriesAdapter()
-        recyclerView.adapter = adapter
-        loadJSON()
+//        recyclerView.layoutManager = LinearLayoutManager(context)
+//        adapter = CountriesAdapter(this)
+//        recyclerView.adapter = adapter
+//        loadJSON()
 
 
         val root = inflater.inflate(R.layout.fragment_dashboard, container, false)

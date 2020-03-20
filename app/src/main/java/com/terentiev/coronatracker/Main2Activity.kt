@@ -35,8 +35,10 @@ import java.lang.reflect.Type
 import java.text.SimpleDateFormat
 import java.util.*
 
+class Main2Activity : AppCompatActivity(),
+    SwipeRefreshLayout.OnRefreshListener,
+    CountriesAdapter.ItemEvents {
 
-class Main2Activity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
     private lateinit var searchView: SearchView
     private lateinit var adapter: CountriesAdapter
     private lateinit var networkUnavailableSnackBar: Snackbar
@@ -72,7 +74,7 @@ class Main2Activity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener 
     }
 
     private fun initRecyclerView() {
-        adapter = CountriesAdapter()
+        adapter = CountriesAdapter(this)
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(this)
     }
@@ -220,4 +222,14 @@ class Main2Activity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener 
         editor.putString("all", gson.toJson(data))
         editor.apply()
     }
+
+    override fun onItemLongClicked(country: Country) {
+        Log.d("MainActivity", "onItemLongClicked()")
+        showUpdateToast()
+    }
+
+    override fun onItemClicked(position: Int, country: Country) {
+        Log.d("MainActivity", "onItemClicked()")
+    }
+
 }

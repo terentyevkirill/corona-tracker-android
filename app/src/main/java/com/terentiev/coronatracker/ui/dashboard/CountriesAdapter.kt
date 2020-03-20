@@ -5,25 +5,39 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.terentiev.coronatracker.R
 import com.terentiev.coronatracker.data.Country
 import kotlinx.android.synthetic.main.country_card.view.*
 
-class CountriesAdapter :
+class CountriesAdapter(countriesEvents: ItemEvents) :
     RecyclerView.Adapter<CountriesAdapter.ViewHolder>(), Filterable {
     private lateinit var countries: List<Country>
     private var filteredCountries = listOf<Country>()
+    private val listener: ItemEvents = countriesEvents
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val place: TextView = itemView.tv_place
-        val country: TextView = itemView.tv_country
-        val cases: TextView = itemView.tv_cases_num
-        val todayCases: TextView = itemView.tv_today_cases_num
-        val deaths: TextView = itemView.tv_deaths_num
-        val todayDeaths: TextView = itemView.tv_today_deaths_num
-        val recovered: TextView = itemView.tv_recovered_num
+        fun bind(position: Int, country: Country, listener: ItemEvents) {
+            itemView.tv_place.text = "#${position + 1}"
+            itemView.tv_country.text = country.country
+            itemView.tv_cases_num.text = country.cases.toString()
+            itemView.tv_deaths_num.text = country.deaths.toString()
+            itemView.tv_today_cases_num.text = country.todayCases.toString()
+            itemView.tv_today_deaths_num.text = country.todayDeaths.toString()
+            itemView.tv_recovered_num.text = country.recovered.toString()
+            itemView.setOnLongClickListener(View.OnLongClickListener {
+                listener.onItemLongClicked(country)
+                true
+            })
+            itemView.setOnClickListener {
+                listener.onItemClicked(position, country)
+            }
+        }
+    }
+
+    interface ItemEvents {
+        fun onItemLongClicked(country: Country)
+        fun onItemClicked(position: Int, country: Country)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -42,13 +56,9 @@ class CountriesAdapter :
     override fun getItemCount() = filteredCountries.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.place.text = "#" + (countries.indexOf(filteredCountries[position]) + 1).toString()
-        holder.country.text = filteredCountries[position].country
-        holder.cases.text = filteredCountries[position].cases.toString()
-        holder.deaths.text = filteredCountries[position].deaths.toString()
-        holder.todayCases.text = filteredCountries[position].todayCases.toString()
-        holder.todayDeaths.text = filteredCountries[position].todayDeaths.toString()
-        holder.recovered.text = filteredCountries[position].recovered.toString()
+        val actualPosition =
+            countries.indexOf(countries.single { country -> country.country == filteredCountries[position].country })
+        holder.bind(actualPosition, filteredCountries[position], listener)
     }
 
     override fun getFilter(): Filter {
