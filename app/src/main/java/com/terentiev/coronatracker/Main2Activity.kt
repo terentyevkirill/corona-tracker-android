@@ -11,12 +11,14 @@ import android.util.Log
 import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.LinearLayout
 import android.widget.SearchView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
@@ -42,6 +44,7 @@ class Main2Activity : AppCompatActivity(),
     private lateinit var searchView: SearchView
     private lateinit var adapter: CountriesAdapter
     private lateinit var networkUnavailableSnackBar: Snackbar
+    private lateinit var updateFailedSnackBar: Snackbar
     private lateinit var pref: SharedPreferences
     private lateinit var retrofit: Retrofit
     private lateinit var api: ApiService
@@ -50,7 +53,7 @@ class Main2Activity : AppCompatActivity(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main2)
-        initSnackBar()
+        initSnackBars()
         initRecyclerView()
         initApi()
         initSwipeRefreshLayout()
@@ -75,21 +78,31 @@ class Main2Activity : AppCompatActivity(),
 
     private fun initRecyclerView() {
         adapter = CountriesAdapter(this)
-        recyclerView.adapter = adapter
+        adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
+            override fun onChanged() {
+                super.onChanged()
+                checkEmpty()
+            }
+
+            fun checkEmpty() {
+                tv_no_results.visibility = (if (adapter.itemCount == 0) View.VISIBLE else View.GONE)
+            }
+        })
         recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.adapter = adapter
     }
 
-    private fun initSnackBar() {
+    private fun initSnackBars() {
         networkUnavailableSnackBar =
             Snackbar.make(
                 container_mainactivity2,
                 getString(R.string.no_conn),
                 Snackbar.LENGTH_LONG
             )
-
         networkUnavailableSnackBar.setAction(R.string.settings) {
             startActivity(Intent(Settings.ACTION_SETTINGS))
         }
+        updateFailedSnackBar = Snackbar.make(container_mainactivity2, getString(R.string.update_failed), Snackbar.LENGTH_LONG)
     }
 
     private fun showUpdateToast() {
@@ -111,7 +124,6 @@ class Main2Activity : AppCompatActivity(),
                 Log.d("MainActivity", "onResponse():${response.body()}")
                 averageData = response.body()!!
                 saveDataToSharedPrefs(averageData!!)
-                initSnackBar()
                 showUpdateToast()
             }
 
@@ -125,11 +137,17 @@ class Main2Activity : AppCompatActivity(),
                 adapter.setCountries(response.body()!!)
                 saveDataToSharedPrefs(response.body()!!)
                 swipeRefreshLayout.isRefreshing = false
+                if (updateFailedSnackBar.isShown) {
+                    updateFailedSnackBar.dismiss()
+                }
             }
-
             override fun onFailure(call: Call<List<Country>>, t: Throwable) {
                 Log.d("MainActivity", "onFailure()")
                 swipeRefreshLayout.isRefreshing = false
+                showUpdateToast()
+                if (!updateFailedSnackBar.isShown) {
+                    updateFailedSnackBar.show()
+                }
             }
         })
     }
@@ -146,7 +164,6 @@ class Main2Activity : AppCompatActivity(),
                 adapter.filter.filter(query)
                 return false
             }
-
             override fun onQueryTextChange(newText: String?): Boolean {
                 adapter.filter.filter(newText)
                 return false

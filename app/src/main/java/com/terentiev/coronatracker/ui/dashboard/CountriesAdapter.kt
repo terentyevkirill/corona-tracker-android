@@ -15,6 +15,7 @@ class CountriesAdapter(countriesEvents: ItemEvents) :
     private lateinit var countries: List<Country>
     private var filteredCountries = listOf<Country>()
     private val listener: ItemEvents = countriesEvents
+    private var filterString: String = ""
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind(position: Int, country: Country, listener: ItemEvents) {
@@ -47,13 +48,13 @@ class CountriesAdapter(countriesEvents: ItemEvents) :
 
     fun setCountries(countries: List<Country>) {
         this.countries = countries
-        if (filteredCountries.isEmpty()) {
-            this.filteredCountries = countries
-        }
+        filter.filter(filterString)
         notifyDataSetChanged()
     }
 
-    override fun getItemCount() = filteredCountries.size
+    override fun getItemCount() : Int {
+        return filteredCountries.size
+    }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val actualPosition =
@@ -65,6 +66,7 @@ class CountriesAdapter(countriesEvents: ItemEvents) :
         return object : Filter() {
             override fun performFiltering(p0: CharSequence?): FilterResults {
                 val charString = p0.toString()
+                filterString = charString
                 filteredCountries = if (charString.isEmpty()) {
                     countries
                 } else {
