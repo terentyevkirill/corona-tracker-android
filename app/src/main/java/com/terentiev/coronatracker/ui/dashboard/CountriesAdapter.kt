@@ -31,6 +31,7 @@ class CountriesAdapter(countriesEvents: ItemEvents) :
             if (country.countryInfo.iso2 == "NO DATA") {
                 itemView.iv_flag.visibility = View.GONE
             } else {
+                itemView.iv_flag.visibility = View.VISIBLE
                 Glide
                     .with(itemView.context)
                     .load("https://www.countryflags.io/${country.countryInfo.iso2}/shiny/64.png")
