@@ -1,5 +1,6 @@
 package com.terentiev.coronatracker.ui.dashboard
 
+import android.opengl.Visibility
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,6 +28,14 @@ class CountriesAdapter(countriesEvents: ItemEvents) :
             itemView.tv_today_cases_num.text = country.todayCases.toString()
             itemView.tv_today_deaths_num.text = country.todayDeaths.toString()
             itemView.tv_recovered_num.text = country.recovered.toString()
+            if (country.countryInfo.iso2 == "NO DATA") {
+                itemView.iv_flag.visibility = View.GONE
+            } else {
+                Glide
+                    .with(itemView.context)
+                    .load("https://www.countryflags.io/${country.countryInfo.iso2}/shiny/64.png")
+                    .into(itemView.iv_flag)
+            }
             itemView.setOnLongClickListener {
                 listener.onItemLongClicked(country)
                 true
@@ -34,10 +43,7 @@ class CountriesAdapter(countriesEvents: ItemEvents) :
             itemView.setOnClickListener {
                 listener.onItemClicked(position, country)
             }
-            Glide
-                .with(itemView.context)
-                .load(country.countryInfo.flag)
-                .into(itemView.iv_flag)
+
         }
     }
 
