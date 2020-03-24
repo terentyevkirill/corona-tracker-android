@@ -1,6 +1,5 @@
 package com.terentiev.coronatracker.ui.dashboard
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -58,7 +57,7 @@ class CountriesAdapter(countriesEvents: ItemEvents) :
         notifyDataSetChanged()
     }
 
-    override fun getItemCount() : Int {
+    override fun getItemCount(): Int {
         return filteredCountries.size
     }
 
@@ -79,6 +78,14 @@ class CountriesAdapter(countriesEvents: ItemEvents) :
                     val filteredList = arrayListOf<Country>()
                     for (row in countries) {
                         if (row.country!!.toLowerCase().contains(charString.toLowerCase())
+                            || (row.countryInfo.iso2!!.toLowerCase()
+                                .contains(charString.toLowerCase()) && !row.countryInfo.iso2.equals(
+                                "NO DATA"
+                            ))
+                            || (row.countryInfo.iso3!!.toLowerCase()
+                                .contains(charString.toLowerCase()) && !row.countryInfo.iso3.equals(
+                                "NO DATA"
+                            ))
                         ) {
                             filteredList.add(row)
                         }
