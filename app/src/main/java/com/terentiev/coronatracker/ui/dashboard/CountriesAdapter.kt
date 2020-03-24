@@ -1,11 +1,13 @@
 package com.terentiev.coronatracker.ui.dashboard
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.terentiev.coronatracker.R
 import com.terentiev.coronatracker.data.Country
 import kotlinx.android.synthetic.main.country_card.view.*
@@ -26,13 +28,17 @@ class CountriesAdapter(countriesEvents: ItemEvents) :
             itemView.tv_today_cases_num.text = country.todayCases.toString()
             itemView.tv_today_deaths_num.text = country.todayDeaths.toString()
             itemView.tv_recovered_num.text = country.recovered.toString()
-            itemView.setOnLongClickListener(View.OnLongClickListener {
+            itemView.setOnLongClickListener {
                 listener.onItemLongClicked(country)
                 true
-            })
+            }
             itemView.setOnClickListener {
                 listener.onItemClicked(position, country)
             }
+            Glide
+                .with(itemView.context)
+                .load(country.countryInfo.flag)
+                .into(itemView.iv_flag)
         }
     }
 

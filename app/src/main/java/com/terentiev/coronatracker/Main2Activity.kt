@@ -119,35 +119,41 @@ class Main2Activity : AppCompatActivity(),
 
     private fun loadJSON() {
         swipeRefreshLayout.isRefreshing = true
-        api.fetchAll().enqueue(object : Callback<AverageInfo> {
-            override fun onResponse(call: Call<AverageInfo>, response: Response<AverageInfo>) {
-                Log.d("MainActivity", "onResponse():${response.body()}")
-                averageData = response.body()!!
-                saveDataToSharedPrefs(averageData!!)
-                showUpdateToast()
-            }
-
-            override fun onFailure(call: Call<AverageInfo>, t: Throwable) {
-                Log.d("MainActivity", "onFailure()")
-            }
-        })
+        // TODO: call both requests together (RxJs zip?)
         api.fetchAllCountries().enqueue(object : Callback<List<Country>> {
             override fun onResponse(call: Call<List<Country>>, response: Response<List<Country>>) {
-                Log.d("MainActivity", "onResponse():${response.body()}")
-                adapter.setCountries(response.body()!!)
-                saveDataToSharedPrefs(response.body()!!)
-                swipeRefreshLayout.isRefreshing = false
-                if (updateFailedSnackBar.isShown) {
-                    updateFailedSnackBar.dismiss()
+                if (response.isSuccessful) {
+                    Log.d("MainActivity", "onResponse():${response.body()}")
+                    adapter.setCountries(response.body()!!)
+                    saveDataToSharedPrefs(response.body()!!)
+                    swipeRefreshLayout.isRefreshing = false
+                    if (updateFailedSnackBar.isShown) {
+                        updateFailedSnackBar.dismiss()
+                    }
                 }
             }
             override fun onFailure(call: Call<List<Country>>, t: Throwable) {
-                Log.d("MainActivity", "onFailure()")
+                Log.d("MainActivity", "onFailure(): ${t.cause}")
                 swipeRefreshLayout.isRefreshing = false
-                showUpdateToast()
+//                showUpdateToast()
                 if (!updateFailedSnackBar.isShown) {
                     updateFailedSnackBar.show()
                 }
+            }
+        })
+
+        api.fetchAll().enqueue(object : Callback<AverageInfo> {
+            override fun onResponse(call: Call<AverageInfo>, response: Response<AverageInfo>) {
+                if (response.isSuccessful) {
+                    Log.d("MainActivity", "onResponse():${response.body()}")
+                    averageData = response.body()!!
+                    saveDataToSharedPrefs(averageData!!)
+                    showUpdateToast()
+                }
+            }
+
+            override fun onFailure(call: Call<AverageInfo>, t: Throwable) {
+                Log.d("MainActivity", "onFailure(): ${t.cause}")
             }
         })
     }
