@@ -180,7 +180,7 @@ class Main2Activity : AppCompatActivity(),
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         return when (item?.itemId) {
             R.id.search_item -> true
-            else -> super.onOptionsItemSelected(item)
+            else -> super.onOptionsItemSelected(item!!)
         }
     }
 
