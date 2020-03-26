@@ -10,5 +10,6 @@ data class Country(
     val recovered: Long,
     val active: Long,
     val critical: Long,
-    val casesPerOneMillion: Long
+    val casesPerOneMillion: Double,
+    val deathsPerOneMillion: Double
 )

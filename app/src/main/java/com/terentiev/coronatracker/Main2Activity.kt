@@ -135,7 +135,6 @@ class Main2Activity : AppCompatActivity(),
             override fun onFailure(call: Call<List<Country>>, t: Throwable) {
                 Log.d("MainActivity", "onFailure(): ${t.cause}")
                 swipeRefreshLayout.isRefreshing = false
-//                showUpdateToast()
                 if (!updateFailedSnackBar.isShown) {
                     updateFailedSnackBar.show()
                 }
@@ -196,6 +195,7 @@ class Main2Activity : AppCompatActivity(),
     override fun onRefresh() {
         if (isNetworkAvailable()) {
             networkUnavailableSnackBar.dismiss()
+            recyclerView.recycledViewPool.clear()
             loadJSON()
         } else {
             swipeRefreshLayout.postDelayed({

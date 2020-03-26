@@ -30,7 +30,7 @@ class CountriesAdapter(countriesEvents: ItemEvents) :
             itemView.tv_recovered_num.text = country.recovered.toString()
             Glide
                 .with(itemView.context)
-                .load("https://www.countryflags.io/${country.countryInfo.iso2}/shiny/64.png")
+                .load(country.countryInfo.flag)
                 .into(itemView.iv_flag)
 
             itemView.setOnLongClickListener {
@@ -81,14 +81,12 @@ class CountriesAdapter(countriesEvents: ItemEvents) :
                     val filteredList = arrayListOf<Country>()
                     for (row in countries) {
                         if (row.country!!.toLowerCase().contains(charString.toLowerCase())
-                            || (row.countryInfo.iso2!!.toLowerCase()
-                                .contains(charString.toLowerCase()) && !row.countryInfo.iso2.equals(
-                                "NO DATA"
-                            ))
-                            || (row.countryInfo.iso3!!.toLowerCase()
-                                .contains(charString.toLowerCase()) && !row.countryInfo.iso3.equals(
-                                "NO DATA"
-                            ))
+                            || (row.countryInfo.iso2 != null && row.countryInfo.iso2!!.toLowerCase()
+                                .contains(charString.toLowerCase())
+                                    )
+                            || (row.countryInfo.iso3 != null && row.countryInfo.iso3!!.toLowerCase()
+                                .contains(charString.toLowerCase())
+                                    )
                         ) {
                             filteredList.add(row)
                         }
@@ -102,8 +100,10 @@ class CountriesAdapter(countriesEvents: ItemEvents) :
             }
 
             override fun publishResults(p0: CharSequence?, p1: FilterResults?) {
-                filteredCountries = p1?.values as List<Country>
-                notifyDataSetChanged()
+                if (p1?.values != null) {
+                    filteredCountries = p1?.values as List<Country>
+                    notifyDataSetChanged()
+                }
             }
 
         }
