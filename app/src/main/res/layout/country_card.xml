@@ -50,11 +50,13 @@
 
                 <ImageView
                     android:id="@+id/iv_flag"
-                    android:layout_width="35dp"
+                    android:layout_width="32dp"
                     android:layout_height="match_parent"
-                    android:baselineAligned="false"
-                    android:cropToPadding="false"
-                    android:scaleType="fitCenter"
+                    android:layout_margin="2dp"
+                    android:background="@drawable/flag_border"
+                    android:baselineAligned="true"
+                    android:cropToPadding="true"
+                    android:padding="0.5dp"
                     tools:srcCompat="@drawable/ua" />
 
             </TableRow>

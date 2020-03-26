@@ -4,10 +4,17 @@ import android.opengl.Visibility
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewOutlineProvider
+import android.view.animation.Transformation
 import android.widget.Filter
 import android.widget.Filterable
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.TransitionOptions
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import com.bumptech.glide.load.resource.bitmap.CenterInside
+import com.bumptech.glide.load.resource.bitmap.FitCenter
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.terentiev.coronatracker.R
 import com.terentiev.coronatracker.data.Country
 import kotlinx.android.synthetic.main.country_card.view.*
@@ -31,6 +38,7 @@ class CountriesAdapter(countriesEvents: ItemEvents) :
             Glide
                 .with(itemView.context)
                 .load(country.countryInfo.flag)
+                .transform(CenterCrop(), RoundedCorners(11))
                 .into(itemView.iv_flag)
 
             itemView.setOnLongClickListener {
@@ -72,10 +80,11 @@ class CountriesAdapter(countriesEvents: ItemEvents) :
 
     override fun getFilter(): Filter {
         return object : Filter() {
+            private var bufferList = listOf<Country>()  // to avoid Inconsistency error
             override fun performFiltering(p0: CharSequence?): FilterResults {
                 val charString = p0.toString()
                 filterString = charString
-                filteredCountries = if (charString.isEmpty()) {
+                bufferList = if (charString.isEmpty()) {
                     countries
                 } else {
                     val filteredList = arrayListOf<Country>()
@@ -95,13 +104,15 @@ class CountriesAdapter(countriesEvents: ItemEvents) :
                 }
 
                 val filterResults = FilterResults()
-                filterResults.values = filteredCountries
+                filterResults.values = bufferList
                 return filterResults
             }
 
             override fun publishResults(p0: CharSequence?, p1: FilterResults?) {
                 if (p1?.values != null) {
-                    filteredCountries = p1?.values as List<Country>
+                    bufferList = p1?.values as List<Country>
+                    filteredCountries = bufferList
+//                    filteredCountries = p1?.values as List<Country>
                     notifyDataSetChanged()
                 }
             }
