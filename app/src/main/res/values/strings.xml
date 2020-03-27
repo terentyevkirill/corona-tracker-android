@@ -14,4 +14,5 @@
     <string name="updated">"Last updated:"</string>
     <string name="update_failed">Update failed</string>
     <string name="no_results">No results found</string>
+    <string name="worldwide">Worldwide</string>
 </resources>
