@@ -2,20 +2,15 @@ package com.terentiev.coronatracker.ui.dashboard
 
 import android.app.ProgressDialog
 import android.os.Bundle
-import android.util.Log
 import android.util.Log.d
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.terentiev.coronatracker.R
 import com.terentiev.coronatracker.api.ApiService
-import com.terentiev.coronatracker.data.AverageInfo
 import com.terentiev.coronatracker.data.Country
-import kotlinx.android.synthetic.main.activity_main2.*
-import kotlinx.android.synthetic.main.fragment_dashboard.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -58,7 +53,7 @@ class DashboardFragment : Fragment() {
         progressDialog.setTitle("Fetching data");
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.show()
-        api.fetchAllCountries().enqueue(object : Callback<List<Country>> {
+        api.fetchCountriesByCases().enqueue(object : Callback<List<Country>> {
             override fun onResponse(call: Call<List<Country>>, response: Response<List<Country>>) {
                 d("DashboardFragment", "onResponse()")
                 progressDialog.dismiss()

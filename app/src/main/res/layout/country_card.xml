@@ -16,52 +16,57 @@
         android:layout_margin="4dp"
         android:orientation="vertical">
 
-        <TableLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:stretchColumns="1">
+            android:layout_height="match_parent">
 
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical">
+            <TextView
+                android:id="@+id/tv_place"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="2dp"
+                android:baselineAligned="false"
+                android:gravity="center"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="#1" />
 
-                <TextView
-                    android:id="@+id/tv_place"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="2dp"
-                    android:baselineAligned="false"
-                    android:gravity="center"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    tools:text="#1" />
+            <TextView
+                android:id="@+id/tv_country"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginEnd="2dp"
+                android:layout_marginBottom="2dp"
+                android:gravity="start"
+                android:singleLine="false"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/tv_place"
+                app:layout_constraintEnd_toStartOf="@+id/iv_flag"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@+id/tv_place"
+                app:layout_constraintTop_toTopOf="@+id/tv_place"
+                tools:text="Ukraine" />
 
-                <TextView
-                    android:id="@+id/tv_country"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="2dp"
-                    android:gravity="start"
-                    android:singleLine="false"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    tools:text="Ukraine" />
-
-                <ImageView
-                    android:id="@+id/iv_flag"
-                    android:layout_width="32dp"
-                    android:layout_height="match_parent"
-                    android:layout_margin="2dp"
-                    android:background="@drawable/flag_border"
-                    android:baselineAligned="true"
-                    android:cropToPadding="true"
-                    android:padding="0.5dp"
-                    tools:srcCompat="@drawable/ua" />
-
-            </TableRow>
-
-        </TableLayout>
+            <ImageView
+                android:id="@+id/iv_flag"
+                android:layout_width="32dp"
+                android:layout_height="22dp"
+                android:layout_margin="2dp"
+                android:background="@drawable/flag_border"
+                android:baselineAligned="true"
+                android:cropToPadding="true"
+                android:padding="0.5dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:srcCompat="@drawable/ua" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TableLayout
             android:layout_width="match_parent"
@@ -78,7 +83,7 @@
                     android:layout_height="wrap_content"
                     android:baselineAligned="false"
                     android:gravity="center"
-                    android:text="@string/cases" />
+                    android:text="@string/cases"/>
 
                 <TextView
                     android:id="@+id/tv_deaths"

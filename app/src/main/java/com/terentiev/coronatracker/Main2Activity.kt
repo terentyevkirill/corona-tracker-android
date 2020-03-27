@@ -120,7 +120,7 @@ class Main2Activity : AppCompatActivity(),
     private fun loadJSON() {
         swipeRefreshLayout.isRefreshing = true
         // TODO: call both requests together (RxJs zip?)
-        api.fetchAllCountries().enqueue(object : Callback<List<Country>> {
+        api.fetchCountriesByCases().enqueue(object : Callback<List<Country>> {
             override fun onResponse(call: Call<List<Country>>, response: Response<List<Country>>) {
                 if (response.isSuccessful) {
                     Log.d("MainActivity", "onResponse():${response.body()}")
