@@ -13,7 +13,7 @@
 
     <item
         android:id="@+id/navigation_countries"
-        android:icon="@drawable/ic_ranking_black_24dp"
+        android:icon="@drawable/ic_list_black_24dp"
         android:title="@string/title_countries"/>
 
     <item
