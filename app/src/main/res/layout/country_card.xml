@@ -65,7 +65,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:srcCompat="@drawable/ua" />
+                tools:srcCompat="@drawable/flag" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TableLayout

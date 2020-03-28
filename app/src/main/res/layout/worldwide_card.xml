@@ -11,9 +11,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_margin="2dp"
-        android:drawableEnd="@drawable/ic_globe_24dp"
+        android:drawableEnd="@drawable/ic_globe_gray_24dp"
         android:gravity="center"
-        android:text="@string/worldwide"
+        android:text="@string/title_world"
         android:textSize="16sp"
         android:textStyle="bold" />
 

@@ -1,4 +1,4 @@
-package com.terentiev.coronatracker.ui.dashboard
+package com.terentiev.coronatracker.ui.countries
 
 import android.view.LayoutInflater
 import android.view.View
