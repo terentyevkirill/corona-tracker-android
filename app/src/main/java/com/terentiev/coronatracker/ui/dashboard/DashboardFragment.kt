@@ -10,7 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.terentiev.coronatracker.R
 import com.terentiev.coronatracker.api.ApiService
-import com.terentiev.coronatracker.data.Country
+import com.terentiev.coronatracker.data.CountryData
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -53,14 +53,14 @@ class DashboardFragment : Fragment() {
         progressDialog.setTitle("Fetching data");
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.show()
-        api.fetchCountriesByCases().enqueue(object : Callback<List<Country>> {
-            override fun onResponse(call: Call<List<Country>>, response: Response<List<Country>>) {
+        api.fetchCountriesByCases().enqueue(object : Callback<List<CountryData>> {
+            override fun onResponse(call: Call<List<CountryData>>, response: Response<List<CountryData>>) {
                 d("DashboardFragment", "onResponse()")
                 progressDialog.dismiss()
                 adapter.setCountries(response.body()!!)
             }
 
-            override fun onFailure(call: Call<List<Country>>, t: Throwable) {
+            override fun onFailure(call: Call<List<CountryData>>, t: Throwable) {
                 progressDialog.dismiss()
                 d("DashboardFragment", "onFailure()")
             }

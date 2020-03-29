@@ -1,6 +1,6 @@
 package com.terentiev.coronatracker.data
 
-data class Country(
+data class CountryData(
     val country: String,
     val countryInfo: CountryInfo,
     val cases: Long,

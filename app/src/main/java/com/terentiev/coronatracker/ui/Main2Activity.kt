@@ -1,4 +1,4 @@
-package com.terentiev.coronatracker
+package com.terentiev.coronatracker.ui
 
 import android.app.SearchManager
 import android.content.Context
@@ -17,9 +17,10 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.terentiev.coronatracker.R
 import com.terentiev.coronatracker.api.ApiService
-import com.terentiev.coronatracker.data.AverageInfo
-import com.terentiev.coronatracker.data.Country
+import com.terentiev.coronatracker.data.WorldData
+import com.terentiev.coronatracker.data.CountryData
 import com.terentiev.coronatracker.ui.dashboard.CountriesAdapter
 import kotlinx.android.synthetic.main.activity_main2.*
 import retrofit2.Call
@@ -42,7 +43,7 @@ class Main2Activity : AppCompatActivity(),
     private lateinit var pref: SharedPreferences
     private lateinit var retrofit: Retrofit
     private lateinit var api: ApiService
-    private var averageInfo: AverageInfo? = null
+    private var worldData: WorldData? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -104,7 +105,7 @@ class Main2Activity : AppCompatActivity(),
     }
 
     private fun showUpdateToast() {
-        val date = Date(averageInfo!!.updated)
+        val date = Date(worldData!!.updated)
         val sdf = SimpleDateFormat("dd MMM yyyy HH:mm", Locale.getDefault())
         val toast = Toast.makeText(
             applicationContext, "${getString(R.string.updated)}\n${sdf.format(date)}",
@@ -117,10 +118,10 @@ class Main2Activity : AppCompatActivity(),
 
     private fun loadJSON() {
         // TODO: call both requests together (RxJs zip?)
-        api.fetchCountriesByCases().enqueue(object : Callback<List<Country>> {
+        api.fetchCountriesByCases().enqueue(object : Callback<List<CountryData>> {
             override fun onResponse(
-                call: Call<List<Country>>,
-                response: Response<List<Country>>
+                call: Call<List<CountryData>>,
+                response: Response<List<CountryData>>
             ) {
                 if (response.isSuccessful) {
                     Log.d("MainActivity", "onResponse():${response.body()}")
@@ -133,7 +134,7 @@ class Main2Activity : AppCompatActivity(),
                 }
             }
 
-            override fun onFailure(call: Call<List<Country>>, t: Throwable) {
+            override fun onFailure(call: Call<List<CountryData>>, t: Throwable) {
                 Log.d("MainActivity", "onFailure(): ${t.cause}")
                 swipeRefreshLayout.isRefreshing = false
                 if (!updateFailedSnackBar.isShown) {
@@ -142,18 +143,18 @@ class Main2Activity : AppCompatActivity(),
             }
         })
 
-        api.fetchAll().enqueue(object : Callback<AverageInfo> {
-            override fun onResponse(call: Call<AverageInfo>, response: Response<AverageInfo>) {
+        api.fetchAll().enqueue(object : Callback<WorldData> {
+            override fun onResponse(call: Call<WorldData>, response: Response<WorldData>) {
                 if (response.isSuccessful) {
                     Log.d("MainActivity", "onResponse():${response.body()}")
-                    averageInfo = response.body()!!
-                    adapter.setAverageInfo(averageInfo!!)
-                    saveDataToSharedPrefs(averageInfo!!)
+                    worldData = response.body()!!
+                    adapter.setAverageInfo(worldData!!)
+                    saveDataToSharedPrefs(worldData!!)
 //                    showUpdateToast()
                 }
             }
 
-            override fun onFailure(call: Call<AverageInfo>, t: Throwable) {
+            override fun onFailure(call: Call<WorldData>, t: Throwable) {
                 Log.d("MainActivity", "onFailure(): ${t.cause}")
             }
         })
@@ -228,37 +229,37 @@ class Main2Activity : AppCompatActivity(),
         ) {
             val gson = Gson()
             val typeCountries: Type =
-                object : TypeToken<List<Country?>?>() {}.type
+                object : TypeToken<List<CountryData?>?>() {}.type
             val typeAll: Type =
-                object : TypeToken<AverageInfo?>() {}.type
+                object : TypeToken<WorldData?>() {}.type
             val countries =
-                gson.fromJson(pref.getString("countries", ""), typeCountries) as List<Country>
-            averageInfo = gson.fromJson(pref.getString("all", ""), typeAll) as AverageInfo
+                gson.fromJson(pref.getString("countries", ""), typeCountries) as List<CountryData>
+            worldData = gson.fromJson(pref.getString("all", ""), typeAll) as WorldData
             adapter.setCountries(countries)
-            adapter.setAverageInfo(averageInfo!!)
+            adapter.setAverageInfo(worldData!!)
         }
     }
 
-    private fun saveDataToSharedPrefs(data: List<Country>) {
+    private fun saveDataToSharedPrefs(data: List<CountryData>) {
         val editor = pref.edit()
         val gson = Gson()
         editor.putString("countries", gson.toJson(data))
         editor.apply()
     }
 
-    private fun saveDataToSharedPrefs(data: AverageInfo) {
+    private fun saveDataToSharedPrefs(data: WorldData) {
         val editor = pref.edit()
         val gson = Gson()
         editor.putString("all", gson.toJson(data))
         editor.apply()
     }
 
-    override fun onItemLongClicked(country: Country) {
+    override fun onItemLongClicked(country: CountryData) {
         Log.d("MainActivity", "onItemLongClicked()")
         showUpdateToast()
     }
 
-    override fun onItemClicked(position: Int, country: Country) {
+    override fun onItemClicked(position: Int, country: CountryData) {
         Log.d("MainActivity", "onItemClicked()")
     }
 

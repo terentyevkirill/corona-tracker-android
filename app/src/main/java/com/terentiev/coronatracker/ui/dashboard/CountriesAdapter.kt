@@ -10,8 +10,8 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.terentiev.coronatracker.R
-import com.terentiev.coronatracker.data.AverageInfo
-import com.terentiev.coronatracker.data.Country
+import com.terentiev.coronatracker.data.WorldData
+import com.terentiev.coronatracker.data.CountryData
 import kotlinx.android.synthetic.main.country_card.view.*
 import kotlinx.android.synthetic.main.worldwide_card.view.*
 import java.text.SimpleDateFormat
@@ -22,15 +22,15 @@ const val TYPE_ITEM: Int = 1
 
 class CountriesAdapter(countriesEvents: ItemEvents) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>(), Filterable {
-    private lateinit var countries: List<Country>
-    private var filteredCountries = listOf<Country>()
-    private var averageInfo: AverageInfo? = null
+    private lateinit var countries: List<CountryData>
+    private var filteredCountries = listOf<CountryData>()
+    private var worldData: WorldData? = null
     private val listener: ItemEvents = countriesEvents
     private var filterString: String = ""
 
 
     class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        fun bind(position: Int, country: Country, listener: ItemEvents) {
+        fun bind(position: Int, country: CountryData, listener: ItemEvents) {
             itemView.tv_place.text = "#${position + 1}"
             itemView.tv_country.text = country.country
             itemView.tv_cases_num.text = country.cases.toString()
@@ -56,8 +56,8 @@ class CountriesAdapter(countriesEvents: ItemEvents) :
     }
 
     class HeaderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        fun bind(averageInfo: AverageInfo?) {
-            if (averageInfo == null) {
+        fun bind(worldData: WorldData?) {
+            if (worldData == null) {
                 itemView.visibility = View.GONE
                 itemView.layoutParams = RecyclerView.LayoutParams(0, 1)
             } else {
@@ -66,13 +66,13 @@ class CountriesAdapter(countriesEvents: ItemEvents) :
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT
                 )
-                itemView.tv_ww_cases_num.text = averageInfo.cases.toString()
-                itemView.tv_ww_deaths_num.text = averageInfo.deaths.toString()
-                itemView.tv_ww_recovered_num.text = averageInfo.recovered.toString()
+                itemView.tv_ww_cases_num.text = worldData.cases.toString()
+                itemView.tv_ww_deaths_num.text = worldData.deaths.toString()
+                itemView.tv_ww_recovered_num.text = worldData.recovered.toString()
                 itemView.tv_updated_at.text = SimpleDateFormat(
                     "dd MMM yyyy HH:mm",
                     Locale.getDefault()
-                ).format(Date(averageInfo.updated))
+                ).format(Date(worldData.updated))
             }
 
         }
@@ -87,8 +87,8 @@ class CountriesAdapter(countriesEvents: ItemEvents) :
     }
 
     interface ItemEvents {
-        fun onItemLongClicked(country: Country)
-        fun onItemClicked(position: Int, country: Country)
+        fun onItemLongClicked(country: CountryData)
+        fun onItemClicked(position: Int, country: CountryData)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -103,19 +103,19 @@ class CountriesAdapter(countriesEvents: ItemEvents) :
         }
     }
 
-    fun setCountries(countries: List<Country>) {
+    fun setCountries(countries: List<CountryData>) {
         this.countries = countries
         filter.filter(filterString)
         notifyDataSetChanged()
     }
 
-    fun setAverageInfo(averageInfo: AverageInfo) {
-        this.averageInfo = averageInfo
+    fun setAverageInfo(worldData: WorldData) {
+        this.worldData = worldData
         notifyDataSetChanged()
     }
 
     override fun getItemCount(): Int {
-        return if (averageInfo != null) {
+        return if (worldData != null) {
             filteredCountries.size + 1
         } else {
             filteredCountries.size
@@ -124,7 +124,7 @@ class CountriesAdapter(countriesEvents: ItemEvents) :
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (getItemViewType(position) == TYPE_HEADER) {
-            (holder as HeaderViewHolder).bind(averageInfo)
+            (holder as HeaderViewHolder).bind(worldData)
         } else {
             val actualPosition =
                 countries.indexOf(countries.single { country -> country.country == filteredCountries[position - 1].country })
@@ -138,14 +138,14 @@ class CountriesAdapter(countriesEvents: ItemEvents) :
 
     override fun getFilter(): Filter {
         return object : Filter() {
-            private var bufferList = listOf<Country>()  // to avoid Inconsistency error
+            private var bufferList = listOf<CountryData>()  // to avoid Inconsistency error
             override fun performFiltering(p0: CharSequence?): FilterResults {
                 val charString = p0.toString()
                 filterString = charString
                 bufferList = if (charString.isEmpty()) {
                     countries
                 } else {
-                    val filteredList = arrayListOf<Country>()
+                    val filteredList = arrayListOf<CountryData>()
                     for (row in countries) {
                         if ((row.country.toLowerCase().contains(charString.toLowerCase())
                                     )
@@ -169,7 +169,7 @@ class CountriesAdapter(countriesEvents: ItemEvents) :
 
             override fun publishResults(p0: CharSequence?, p1: FilterResults?) {
                 if (p1?.values != null) {
-                    bufferList = p1?.values as List<Country>
+                    bufferList = p1?.values as List<CountryData>
                     filteredCountries = bufferList
 //                    filteredCountries = p1?.values as List<Country>
                     notifyDataSetChanged()
