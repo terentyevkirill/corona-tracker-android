@@ -5,17 +5,34 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/tv_worldwide"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_margin="2dp"
-        android:drawableEnd="@drawable/ic_globe_24dp"
-        android:gravity="center"
-        android:text="@string/worldwide"
-        android:textSize="16sp"
-        android:textStyle="bold" />
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/tv_worldwide"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="2dp"
+            android:drawableEnd="@drawable/ic_globe_24dp"
+            android:gravity="center"
+            android:text="@string/worldwide"
+            android:textAlignment="center"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tv_updated_at"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="2dp"
+            android:textAlignment="center"
+            android:textSize="16sp"
+            tools:text="29 Mar 2020 16:20" />
+    </LinearLayout>
 
     <TableLayout
         android:layout_width="match_parent"

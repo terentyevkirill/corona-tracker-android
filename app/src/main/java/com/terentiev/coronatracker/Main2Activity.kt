@@ -8,14 +8,8 @@ import android.net.ConnectivityManager
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
-import android.view.Gravity
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
-import android.widget.LinearLayout
-import android.widget.SearchView
-import android.widget.TextView
-import android.widget.Toast
+import android.view.*
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -48,7 +42,7 @@ class Main2Activity : AppCompatActivity(),
     private lateinit var pref: SharedPreferences
     private lateinit var retrofit: Retrofit
     private lateinit var api: ApiService
-    private var averageData: AverageInfo? = null
+    private var averageInfo: AverageInfo? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -102,11 +96,15 @@ class Main2Activity : AppCompatActivity(),
         networkUnavailableSnackBar.setAction(R.string.settings) {
             startActivity(Intent(Settings.ACTION_SETTINGS))
         }
-        updateFailedSnackBar = Snackbar.make(container_mainactivity2, getString(R.string.update_failed), Snackbar.LENGTH_LONG)
+        updateFailedSnackBar = Snackbar.make(
+            container_mainactivity2,
+            getString(R.string.update_failed),
+            Snackbar.LENGTH_LONG
+        )
     }
 
     private fun showUpdateToast() {
-        val date = Date(averageData!!.updated)
+        val date = Date(averageInfo!!.updated)
         val sdf = SimpleDateFormat("dd MMM yyyy HH:mm", Locale.getDefault())
         val toast = Toast.makeText(
             applicationContext, "${getString(R.string.updated)}\n${sdf.format(date)}",
@@ -118,11 +116,12 @@ class Main2Activity : AppCompatActivity(),
     }
 
     private fun loadJSON() {
-        swipeRefreshLayout.isRefreshing = true
-        
         // TODO: call both requests together (RxJs zip?)
         api.fetchCountriesByCases().enqueue(object : Callback<List<Country>> {
-            override fun onResponse(call: Call<List<Country>>, response: Response<List<Country>>) {
+            override fun onResponse(
+                call: Call<List<Country>>,
+                response: Response<List<Country>>
+            ) {
                 if (response.isSuccessful) {
                     Log.d("MainActivity", "onResponse():${response.body()}")
                     adapter.setCountries(response.body()!!)
@@ -133,6 +132,7 @@ class Main2Activity : AppCompatActivity(),
                     }
                 }
             }
+
             override fun onFailure(call: Call<List<Country>>, t: Throwable) {
                 Log.d("MainActivity", "onFailure(): ${t.cause}")
                 swipeRefreshLayout.isRefreshing = false
@@ -146,9 +146,10 @@ class Main2Activity : AppCompatActivity(),
             override fun onResponse(call: Call<AverageInfo>, response: Response<AverageInfo>) {
                 if (response.isSuccessful) {
                     Log.d("MainActivity", "onResponse():${response.body()}")
-                    averageData = response.body()!!
-                    saveDataToSharedPrefs(averageData!!)
-                    showUpdateToast()
+                    averageInfo = response.body()!!
+                    adapter.setAverageInfo(averageInfo!!)
+                    saveDataToSharedPrefs(averageInfo!!)
+//                    showUpdateToast()
                 }
             }
 
@@ -156,6 +157,7 @@ class Main2Activity : AppCompatActivity(),
                 Log.d("MainActivity", "onFailure(): ${t.cause}")
             }
         })
+        swipeRefreshLayout.isRefreshing = true
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -168,8 +170,10 @@ class Main2Activity : AppCompatActivity(),
         searchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 adapter.filter.filter(query)
+                searchView.clearFocus();
                 return false
             }
+
             override fun onQueryTextChange(newText: String?): Boolean {
                 adapter.filter.filter(newText)
                 return false
@@ -188,6 +192,7 @@ class Main2Activity : AppCompatActivity(),
     override fun onBackPressed() {
         if (!searchView.isIconified) {
             searchView.isIconified = true
+            searchView.onActionViewCollapsed()
         } else {
             super.onBackPressed()
         }
@@ -201,11 +206,11 @@ class Main2Activity : AppCompatActivity(),
         } else {
             swipeRefreshLayout.postDelayed({
                 swipeRefreshLayout.isRefreshing = false
-            }, 500)
+            }, 100)
             networkUnavailableSnackBar.show()
-            if (averageData != null) {
-                showUpdateToast()
-            }
+//            if (averageInfo != null) {
+//                showUpdateToast()
+//            }
         }
     }
 
@@ -228,8 +233,9 @@ class Main2Activity : AppCompatActivity(),
                 object : TypeToken<AverageInfo?>() {}.type
             val countries =
                 gson.fromJson(pref.getString("countries", ""), typeCountries) as List<Country>
-            averageData = gson.fromJson(pref.getString("all", ""), typeAll) as AverageInfo
+            averageInfo = gson.fromJson(pref.getString("all", ""), typeAll) as AverageInfo
             adapter.setCountries(countries)
+            adapter.setAverageInfo(averageInfo!!)
         }
     }
 
