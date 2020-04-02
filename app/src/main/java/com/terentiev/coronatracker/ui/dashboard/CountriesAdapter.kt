@@ -38,11 +38,17 @@ class CountriesAdapter(countriesEvents: ItemEvents) :
             itemView.tv_today_cases_num.text = country.todayCases.toString()
             itemView.tv_today_deaths_num.text = country.todayDeaths.toString()
             itemView.tv_recovered_num.text = country.recovered.toString()
-            Glide
-                .with(itemView.context)
-                .load(country.countryInfo.flag)
-                .transform(CenterCrop(), RoundedCorners(11))
-                .into(itemView.iv_flag)
+            if (country.countryInfo.flag.contains("unknow")) {
+                itemView.iv_flag.visibility = View.GONE
+            } else {
+                itemView.iv_flag.visibility = View.VISIBLE
+                Glide
+                    .with(itemView.context)
+                    .load(country.countryInfo.flag)
+                    .transform(CenterCrop(), RoundedCorners(11))
+                    .into(itemView.iv_flag)
+            }
+
 
             itemView.setOnLongClickListener {
                 listener.onItemLongClicked(country)
