@@ -40,31 +40,31 @@ class DashboardFragment : Fragment() {
         return root
     }
 
-    private fun loadJSON() {
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://corona.lmao.ninja")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
-        val api = retrofit.create(ApiService::class.java)
-        val progressDialog = ProgressDialog(context)
-        progressDialog.setCancelable(false)
-        progressDialog.setMessage("Loading...");
-        progressDialog.setTitle("Fetching data");
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDialog.show()
-        api.fetchCountriesByCases().enqueue(object : Callback<List<Country>> {
-            override fun onResponse(call: Call<List<Country>>, response: Response<List<Country>>) {
-                d("DashboardFragment", "onResponse()")
-                progressDialog.dismiss()
-                adapter.setCountries(response.body()!!)
-            }
-
-            override fun onFailure(call: Call<List<Country>>, t: Throwable) {
-                progressDialog.dismiss()
-                d("DashboardFragment", "onFailure()")
-            }
-
-        })
-    }
+//    private fun loadJSON() {
+//        val retrofit = Retrofit.Builder()
+//            .baseUrl("https://corona.lmao.ninja")
+//            .addConverterFactory(GsonConverterFactory.create())
+//            .build()
+//
+//        val api = retrofit.create(ApiService::class.java)
+//        val progressDialog = ProgressDialog(context)
+//        progressDialog.setCancelable(false)
+//        progressDialog.setMessage("Loading...");
+//        progressDialog.setTitle("Fetching data");
+//        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+//        progressDialog.show()
+//        api.fetchCountriesByCases().enqueue(object : Callback<List<Country>> {
+//            override fun onResponse(call: Call<List<Country>>, response: Response<List<Country>>) {
+//                d("DashboardFragment", "onResponse()")
+//                progressDialog.dismiss()
+//                adapter.setCountries(response.body()!!)
+//            }
+//
+//            override fun onFailure(call: Call<List<Country>>, t: Throwable) {
+//                progressDialog.dismiss()
+//                d("DashboardFragment", "onFailure()")
+//            }
+//
+//        })
+//    }
 }

@@ -22,14 +22,13 @@ import com.terentiev.coronatracker.data.AverageInfo
 import com.terentiev.coronatracker.data.Country
 import com.terentiev.coronatracker.ui.dashboard.CountriesAdapter
 import kotlinx.android.synthetic.main.activity_main2.*
-import retrofit2.Call
-import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.lang.reflect.Type
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlinx.coroutines.*
 
 class Main2Activity : AppCompatActivity(),
     SwipeRefreshLayout.OnRefreshListener,
@@ -115,49 +114,46 @@ class Main2Activity : AppCompatActivity(),
         toast.show()
     }
 
-    private fun loadJSON() {
+    private fun parallelRequest(
+        successHandler: (Response<List<Country>>?, Response<AverageInfo>?) -> Unit,
+        failureHandler: (Throwable?) -> Unit
+    ) {
+        CoroutineScope(CoroutineExceptionHandler { _, throwable ->
+            failureHandler(throwable)
+        }).launch {
+            val countriesResponse = async { api.fetchCountriesByCases() }
+            val worldResponse = async { api.fetchAll() }
+            withContext(Dispatchers.Main) {
+                successHandler(countriesResponse.await(), worldResponse.await())
+            }
+        }
+    }
+
+    private fun loadData() {
         // TODO: call both requests together (RxJs zip?)
-        api.fetchCountriesByCases().enqueue(object : Callback<List<Country>> {
-            override fun onResponse(
-                call: Call<List<Country>>,
-                response: Response<List<Country>>
-            ) {
-                if (response.isSuccessful) {
-                    Log.d("MainActivity", "onResponse():${response.body()}")
-                    adapter.setCountries(response.body()!!)
-                    saveDataToSharedPrefs(response.body()!!)
+        swipeRefreshLayout.isRefreshing = true
+        parallelRequest(
+            { countriesResponse, worldResponse ->
+                if (countriesResponse!!.isSuccessful and worldResponse!!.isSuccessful) {
+                    Log.d("MainActivity", "onResponseCountries():${countriesResponse.body()}")
+                    Log.d("MainActivity", "onResponseWorld():${worldResponse.body()}")
+                    adapter.setCountries(countriesResponse.body()!!)
+                    adapter.setAverageInfo(worldResponse.body()!!)
+                    saveDataToSharedPrefs(countriesResponse.body()!!, worldResponse.body()!!)
                     swipeRefreshLayout.isRefreshing = false
                     if (updateFailedSnackBar.isShown) {
                         updateFailedSnackBar.dismiss()
                     }
                 }
-            }
-
-            override fun onFailure(call: Call<List<Country>>, t: Throwable) {
-                Log.d("MainActivity", "onFailure(): ${t.cause}")
+            },
+            { exception ->
+                Log.d("MainActivity", "onFailure(): ${exception!!.cause}")
                 swipeRefreshLayout.isRefreshing = false
                 if (!updateFailedSnackBar.isShown) {
                     updateFailedSnackBar.show()
                 }
             }
-        })
-
-        api.fetchAll().enqueue(object : Callback<AverageInfo> {
-            override fun onResponse(call: Call<AverageInfo>, response: Response<AverageInfo>) {
-                if (response.isSuccessful) {
-                    Log.d("MainActivity", "onResponse():${response.body()}")
-                    averageInfo = response.body()!!
-                    adapter.setAverageInfo(averageInfo!!)
-                    saveDataToSharedPrefs(averageInfo!!)
-//                    showUpdateToast()
-                }
-            }
-
-            override fun onFailure(call: Call<AverageInfo>, t: Throwable) {
-                Log.d("MainActivity", "onFailure(): ${t.cause}")
-            }
-        })
-        swipeRefreshLayout.isRefreshing = true
+        )
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -165,9 +161,9 @@ class Main2Activity : AppCompatActivity(),
         searchView = menu?.findItem(R.id.search_item)?.actionView as SearchView
         val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
 
-        searchView?.setSearchableInfo(searchManager.getSearchableInfo(componentName))
-        searchView?.maxWidth = Int.MAX_VALUE
-        searchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(componentName))
+        searchView.maxWidth = Int.MAX_VALUE
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 adapter.filter.filter(query)
                 searchView.clearFocus();
@@ -202,15 +198,12 @@ class Main2Activity : AppCompatActivity(),
         if (isNetworkAvailable()) {
             networkUnavailableSnackBar.dismiss()
             recyclerView.recycledViewPool.clear()
-            loadJSON()
+            loadData()
         } else {
             swipeRefreshLayout.postDelayed({
                 swipeRefreshLayout.isRefreshing = false
             }, 100)
             networkUnavailableSnackBar.show()
-//            if (averageInfo != null) {
-//                showUpdateToast()
-//            }
         }
     }
 
@@ -239,17 +232,11 @@ class Main2Activity : AppCompatActivity(),
         }
     }
 
-    private fun saveDataToSharedPrefs(data: List<Country>) {
+    private fun saveDataToSharedPrefs(countries: List<Country>, world: AverageInfo) {
         val editor = pref.edit()
         val gson = Gson()
-        editor.putString("countries", gson.toJson(data))
-        editor.apply()
-    }
-
-    private fun saveDataToSharedPrefs(data: AverageInfo) {
-        val editor = pref.edit()
-        val gson = Gson()
-        editor.putString("all", gson.toJson(data))
+        editor.putString("countries", gson.toJson(countries))
+        editor.putString("all", gson.toJson(world))
         editor.apply()
     }
 
