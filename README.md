@@ -1,4 +1,4 @@
-Pretty simple Android app for tracking current state of COVID-19 pandemy. 
-Third-party API is used: https://github.com/NovelCOVID/API
-Datasources of API: https://www.worldometers.info/coronavirus/
+# CoronaTracker
+## Pretty simple Android app written in Kotlin for tracking the current state of COVID-19 pandemy.
+Third-party API is used: [NovelCOVID/API](https://github.com/NovelCOVID/API)
 

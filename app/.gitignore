@@ -1,1 +1,7 @@
-/build
+build/**
+*.png
+*.jpg
+*.iml
+.idea/**
+target/**
+docs/**
