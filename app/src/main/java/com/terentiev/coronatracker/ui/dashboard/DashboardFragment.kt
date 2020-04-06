@@ -1,20 +1,12 @@
 package com.terentiev.coronatracker.ui.dashboard
 
-import android.app.ProgressDialog
 import android.os.Bundle
-import android.util.Log.d
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.terentiev.coronatracker.R
-import com.terentiev.coronatracker.api.ApiService
-import com.terentiev.coronatracker.data.Country
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 class DashboardFragment : Fragment() {

@@ -10,8 +10,8 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.terentiev.coronatracker.R
-import com.terentiev.coronatracker.data.AverageInfo
-import com.terentiev.coronatracker.data.Country
+import com.terentiev.coronatracker.data.WorldResponse
+import com.terentiev.coronatracker.data.CountryResponse
 import kotlinx.android.synthetic.main.country_card.view.*
 import kotlinx.android.synthetic.main.worldwide_card.view.*
 import java.text.SimpleDateFormat
@@ -22,15 +22,15 @@ const val TYPE_ITEM: Int = 1
 
 class CountriesAdapter(countriesEvents: ItemEvents) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>(), Filterable {
-    private lateinit var countries: List<Country>
-    private var filteredCountries = listOf<Country>()
-    private var averageInfo: AverageInfo? = null
+    private lateinit var countries: List<CountryResponse>
+    private var filteredCountries = listOf<CountryResponse>()
+    private var averageInfo: WorldResponse? = null
     private val listener: ItemEvents = countriesEvents
     private var filterString: String = ""
 
 
     class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        fun bind(position: Int, country: Country, listener: ItemEvents) {
+        fun bind(position: Int, country: CountryResponse, listener: ItemEvents) {
             itemView.tv_place.text = "#${position + 1}"
             itemView.tv_country.text = country.country
             itemView.tv_cases_num.text = country.cases.toString()
@@ -62,7 +62,7 @@ class CountriesAdapter(countriesEvents: ItemEvents) :
     }
 
     class HeaderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        fun bind(averageInfo: AverageInfo?) {
+        fun bind(averageInfo: WorldResponse?) {
             if (averageInfo == null) {
                 itemView.visibility = View.GONE
                 itemView.layoutParams = RecyclerView.LayoutParams(0, 1)
@@ -93,8 +93,8 @@ class CountriesAdapter(countriesEvents: ItemEvents) :
     }
 
     interface ItemEvents {
-        fun onItemLongClicked(country: Country)
-        fun onItemClicked(position: Int, country: Country)
+        fun onItemLongClicked(country: CountryResponse)
+        fun onItemClicked(position: Int, country: CountryResponse)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -109,13 +109,13 @@ class CountriesAdapter(countriesEvents: ItemEvents) :
         }
     }
 
-    fun setCountries(countries: List<Country>) {
+    fun setCountries(countries: List<CountryResponse>) {
         this.countries = countries
         filter.filter(filterString)
         notifyDataSetChanged()
     }
 
-    fun setAverageInfo(averageInfo: AverageInfo) {
+    fun setAverageInfo(averageInfo: WorldResponse) {
         this.averageInfo = averageInfo
         notifyDataSetChanged()
     }
@@ -144,14 +144,14 @@ class CountriesAdapter(countriesEvents: ItemEvents) :
 
     override fun getFilter(): Filter {
         return object : Filter() {
-            private var bufferList = listOf<Country>()  // to avoid Inconsistency error
+            private var bufferList = listOf<CountryResponse>()  // to avoid Inconsistency error
             override fun performFiltering(p0: CharSequence?): FilterResults {
                 val charString = p0.toString()
                 filterString = charString
                 bufferList = if (charString.isEmpty()) {
                     countries
                 } else {
-                    val filteredList = arrayListOf<Country>()
+                    val filteredList = arrayListOf<CountryResponse>()
                     for (row in countries) {
                         if ((row.country.toLowerCase().contains(charString.toLowerCase())
                                     )
@@ -175,7 +175,7 @@ class CountriesAdapter(countriesEvents: ItemEvents) :
 
             override fun publishResults(p0: CharSequence?, p1: FilterResults?) {
                 if (p1?.values != null) {
-                    bufferList = p1?.values as List<Country>
+                    bufferList = p1?.values as List<CountryResponse>
                     filteredCountries = bufferList
 //                    filteredCountries = p1?.values as List<Country>
                     notifyDataSetChanged()

@@ -18,8 +18,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.terentiev.coronatracker.api.ApiService
-import com.terentiev.coronatracker.data.AverageInfo
-import com.terentiev.coronatracker.data.Country
+import com.terentiev.coronatracker.data.WorldResponse
+import com.terentiev.coronatracker.data.CountryResponse
 import com.terentiev.coronatracker.ui.dashboard.CountriesAdapter
 import kotlinx.android.synthetic.main.activity_main2.*
 import retrofit2.Response
@@ -41,7 +41,7 @@ class Main2Activity : AppCompatActivity(),
     private lateinit var pref: SharedPreferences
     private lateinit var retrofit: Retrofit
     private lateinit var api: ApiService
-    private var averageInfo: AverageInfo? = null
+    private var averageInfo: WorldResponse? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -115,7 +115,7 @@ class Main2Activity : AppCompatActivity(),
     }
 
     private fun parallelRequest(
-        successHandler: (Response<List<Country>>?, Response<AverageInfo>?) -> Unit,
+        successHandler: (Response<List<CountryResponse>>?, Response<WorldResponse>?) -> Unit,
         failureHandler: (Throwable?) -> Unit
     ) {
         CoroutineScope(CoroutineExceptionHandler { _, throwable ->
@@ -221,18 +221,18 @@ class Main2Activity : AppCompatActivity(),
         ) {
             val gson = Gson()
             val typeCountries: Type =
-                object : TypeToken<List<Country?>?>() {}.type
+                object : TypeToken<List<CountryResponse?>?>() {}.type
             val typeAll: Type =
-                object : TypeToken<AverageInfo?>() {}.type
+                object : TypeToken<WorldResponse?>() {}.type
             val countries =
-                gson.fromJson(pref.getString("countries", ""), typeCountries) as List<Country>
-            averageInfo = gson.fromJson(pref.getString("all", ""), typeAll) as AverageInfo
+                gson.fromJson(pref.getString("countries", ""), typeCountries) as List<CountryResponse>
+            averageInfo = gson.fromJson(pref.getString("all", ""), typeAll) as WorldResponse
             adapter.setCountries(countries)
             adapter.setAverageInfo(averageInfo!!)
         }
     }
 
-    private fun saveDataToSharedPrefs(countries: List<Country>, world: AverageInfo) {
+    private fun saveDataToSharedPrefs(countries: List<CountryResponse>, world: WorldResponse) {
         val editor = pref.edit()
         val gson = Gson()
         editor.putString("countries", gson.toJson(countries))
@@ -240,12 +240,12 @@ class Main2Activity : AppCompatActivity(),
         editor.apply()
     }
 
-    override fun onItemLongClicked(country: Country) {
+    override fun onItemLongClicked(country: CountryResponse) {
         Log.d("MainActivity", "onItemLongClicked()")
         showUpdateToast()
     }
 
-    override fun onItemClicked(position: Int, country: Country) {
+    override fun onItemClicked(position: Int, country: CountryResponse) {
         Log.d("MainActivity", "onItemClicked()")
     }
 
