@@ -138,7 +138,8 @@ class Main2Activity : AppCompatActivity(),
                     Log.d("MainActivity", "onResponseCountries():${countriesResponse.body()}")
                     Log.d("MainActivity", "onResponseWorld():${worldResponse.body()}")
                     adapter.setCountries(countriesResponse.body()!!)
-                    adapter.setAverageInfo(worldResponse.body()!!)
+                    averageInfo = worldResponse.body();
+                    adapter.setAverageInfo(averageInfo!!)
                     saveDataToSharedPrefs(countriesResponse.body()!!, worldResponse.body()!!)
                     swipeRefreshLayout.isRefreshing = false
                     if (updateFailedSnackBar.isShown) {
