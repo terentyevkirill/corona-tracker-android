@@ -50,7 +50,8 @@
                 android:layout_weight="1"
                 android:baselineAligned="false"
                 android:gravity="center"
-                android:text="@string/cases" />
+                android:text="@string/cases"
+                android:textSize="16sp" />
 
             <TextView
                 android:id="@+id/tv_ww_deaths"
@@ -60,7 +61,8 @@
                 android:layout_weight="1"
                 android:baselineAligned="false"
                 android:gravity="center"
-                android:text="@string/deaths" />
+                android:text="@string/deaths"
+                android:textSize="16sp" />
 
             <TextView
                 android:id="@+id/tv_ww_recovered"
@@ -71,7 +73,8 @@
                 android:baselineAligned="false"
                 android:gravity="center"
                 android:singleLine="false"
-                android:text="@string/recovered" />
+                android:text="@string/recovered"
+                android:textSize="16sp" />
 
         </TableRow>
 
@@ -83,10 +86,13 @@
                 android:id="@+id/tv_ww_cases_num"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_margin="2dp"
+                android:layout_marginStart="2dp"
+                android:layout_marginTop="1dp"
+                android:layout_marginEnd="2dp"
+                android:layout_marginBottom="2dp"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:textSize="14sp"
+                android:textSize="16sp"
                 android:textStyle="bold"
                 tools:text="500000" />
 
@@ -94,10 +100,13 @@
                 android:id="@+id/tv_ww_deaths_num"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_margin="2dp"
+                android:layout_marginStart="2dp"
+                android:layout_marginTop="1dp"
+                android:layout_marginEnd="2dp"
+                android:layout_marginBottom="2dp"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:textSize="14sp"
+                android:textSize="16sp"
                 android:textStyle="bold"
                 tools:text="30000" />
 
@@ -105,10 +114,13 @@
                 android:id="@+id/tv_ww_recovered_num"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_margin="2dp"
+                android:layout_marginStart="2dp"
+                android:layout_marginTop="1dp"
+                android:layout_marginEnd="2dp"
+                android:layout_marginBottom="2dp"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:textSize="14sp"
+                android:textSize="16sp"
                 android:textStyle="bold"
                 tools:text="132441" />
         </TableRow>

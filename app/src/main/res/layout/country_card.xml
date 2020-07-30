@@ -83,7 +83,8 @@
                     android:layout_height="wrap_content"
                     android:baselineAligned="false"
                     android:gravity="center"
-                    android:text="@string/cases"/>
+                    android:text="@string/cases"
+                    android:textSize="13sp" />
 
                 <TextView
                     android:id="@+id/tv_deaths"
@@ -91,7 +92,8 @@
                     android:layout_height="wrap_content"
                     android:baselineAligned="false"
                     android:gravity="center"
-                    android:text="@string/deaths" />
+                    android:text="@string/deaths"
+                    android:textSize="13sp" />
 
                 <TextView
                     android:id="@+id/tv_today_cases"
@@ -100,7 +102,8 @@
                     android:baselineAligned="false"
                     android:gravity="center"
                     android:singleLine="false"
-                    android:text="@string/today_cases" />
+                    android:text="@string/today_cases"
+                    android:textSize="13sp" />
 
                 <TextView
                     android:id="@+id/tv_today_deaths"
@@ -109,7 +112,8 @@
                     android:baselineAligned="false"
                     android:gravity="center"
                     android:singleLine="false"
-                    android:text="@string/today_deaths" />
+                    android:text="@string/today_deaths"
+                    android:textSize="13sp" />
 
                 <TextView
                     android:id="@+id/tv_recovered"
@@ -118,7 +122,8 @@
                     android:baselineAligned="false"
                     android:gravity="center"
                     android:singleLine="false"
-                    android:text="@string/recovered" />
+                    android:text="@string/recovered"
+                    android:textSize="13sp" />
 
             </TableRow>
 
@@ -131,7 +136,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:textSize="14sp"
+                    android:textSize="13sp"
                     android:textStyle="bold"
                     tools:text="3000" />
 
@@ -140,7 +145,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:textSize="14sp"
+                    android:textSize="13sp"
                     android:textStyle="bold"
                     tools:text="50" />
 
@@ -149,7 +154,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:textSize="14sp"
+                    android:textSize="13sp"
                     android:textStyle="bold"
                     tools:text="3" />
 
@@ -158,7 +163,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:textSize="14sp"
+                    android:textSize="13sp"
                     android:textStyle="bold"
                     tools:text="1" />
 
@@ -167,7 +172,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:textSize="14sp"
+                    android:textSize="13sp"
                     android:textStyle="bold"
                     tools:text="1" />
             </TableRow>

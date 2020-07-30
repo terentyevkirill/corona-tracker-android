@@ -56,7 +56,7 @@ class Main2Activity : AppCompatActivity(),
 
     private fun initApi() {
         retrofit = Retrofit.Builder()
-            .baseUrl("https://corona.lmao.ninja")
+            .baseUrl("https://disease.sh/v3/covid-19/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         api = retrofit.create(ApiService::class.java)

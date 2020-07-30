@@ -6,9 +6,9 @@ import retrofit2.Response
 import retrofit2.http.GET
 
 interface ApiService {
-    @GET("v2/countries?sort=cases")
+    @GET("countries?sort=cases")
     suspend fun fetchCountriesByCases(): Response<List<Country>>
 
-    @GET("v2/all")
+    @GET("all")
     suspend fun fetchAll(): Response<AverageInfo>
 }

@@ -14,6 +14,7 @@ import com.terentiev.coronatracker.data.AverageInfo
 import com.terentiev.coronatracker.data.Country
 import kotlinx.android.synthetic.main.country_card.view.*
 import kotlinx.android.synthetic.main.worldwide_card.view.*
+import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -33,11 +34,11 @@ class CountriesAdapter(countriesEvents: ItemEvents) :
         fun bind(position: Int, country: Country, listener: ItemEvents) {
             itemView.tv_place.text = "#${position + 1}"
             itemView.tv_country.text = country.country
-            itemView.tv_cases_num.text = country.cases.toString()
-            itemView.tv_deaths_num.text = country.deaths.toString()
-            itemView.tv_today_cases_num.text = country.todayCases.toString()
-            itemView.tv_today_deaths_num.text = country.todayDeaths.toString()
-            itemView.tv_recovered_num.text = country.recovered.toString()
+            itemView.tv_cases_num.text = NumberFormat.getIntegerInstance().format(country.cases)
+            itemView.tv_deaths_num.text = NumberFormat.getIntegerInstance().format(country.deaths)
+            itemView.tv_today_cases_num.text = NumberFormat.getIntegerInstance().format(country.todayCases)
+            itemView.tv_today_deaths_num.text = NumberFormat.getIntegerInstance().format(country.todayDeaths)
+            itemView.tv_recovered_num.text = NumberFormat.getIntegerInstance().format(country.recovered)
             if (country.countryInfo.flag.contains("unknow")) {
                 itemView.iv_flag.visibility = View.GONE
             } else {
@@ -72,9 +73,9 @@ class CountriesAdapter(countriesEvents: ItemEvents) :
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT
                 )
-                itemView.tv_ww_cases_num.text = averageInfo.cases.toString()
-                itemView.tv_ww_deaths_num.text = averageInfo.deaths.toString()
-                itemView.tv_ww_recovered_num.text = averageInfo.recovered.toString()
+                itemView.tv_ww_cases_num.text = NumberFormat.getIntegerInstance().format(averageInfo.cases)
+                itemView.tv_ww_recovered_num.text = NumberFormat.getIntegerInstance().format(averageInfo.recovered)
+                itemView.tv_ww_deaths_num.text = NumberFormat.getIntegerInstance().format(averageInfo.deaths)
                 itemView.tv_updated_at.text = SimpleDateFormat(
                     "dd MMM yyyy HH:mm",
                     Locale.getDefault()
